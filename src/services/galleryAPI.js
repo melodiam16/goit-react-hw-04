@@ -6,7 +6,7 @@ const fetchGallery = async (topic, page) => {
   const response = await axios.get("https://api.unsplash.com/search/photos", {
     params: {
       query: topic,
-      per_page: 10,
+      per_page: 9,
       page,
     },
     headers: {

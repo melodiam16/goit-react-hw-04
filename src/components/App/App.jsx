@@ -6,17 +6,18 @@ import ImageGallery from "../ImageGallery/ImageGallery";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
+import React from "react";
+import ImageModal from "../ImageModal/ImageModal";
 
 function App() {
   const [gallery, setGallery] = useState([]);
-  console.log(gallery);
-
   const [topic, setTopic] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
-  console.log(totalPages);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (topic === "") {
@@ -43,21 +44,27 @@ function App() {
     setTopic(newTopic);
     setPage(1);
     setGallery([]);
-    console.log("Searching for:", newTopic);
   };
 
   const handleLoadMore = () => {
-    setPage(page + 1);
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  function openModal(imageUrl) {
+    setIsOpen(true);
+    setSelectedImage(imageUrl);
+  }
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setSelectedImage(null);
   };
 
   return (
     <>
       <SearchBar onSearch={handleSearch} />
-      {loading && (
-        <>
-          <Loader />
-        </>
-      )}
 
       {error && (
         <>
@@ -65,10 +72,21 @@ function App() {
         </>
       )}
 
-      <ImageGallery gallery={gallery} />
+      {loading && (
+        <>
+          <Loader />
+        </>
+      )}
+
+      <ImageGallery gallery={gallery} onImageClick={openModal} />
       {gallery.length > 0 && !loading && (
         <LoadMoreBtn onLoadMore={handleLoadMore} />
       )}
+      <ImageModal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        imageUrl={selectedImage}
+      />
     </>
   );
 }
